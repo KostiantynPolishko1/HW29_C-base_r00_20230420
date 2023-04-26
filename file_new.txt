@@ -1,0 +1,9 @@
+A is given. Necessary create new and remove 
+from it all unacceptable words. The list unacceptable words  
+can be found in another .
+
+are objects that represent sequences of acters. 
+The class is an instantiation of the basic_ 
+class template that uses (i.e., bytes) as its acter  
+with its default traits and allocator (see basic_ 
+for more info on the template).
