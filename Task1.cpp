@@ -47,7 +47,7 @@ string* arrWord(int& i)
 	return arrw;
 }
 
-string Erase(string str)
+string Erase(string &str)
 {
 	int size = 0;
 	string* arrstr = arrWord(size);
@@ -85,18 +85,15 @@ string Erase(string str)
 	return str;
 }
 
-int main()
+void Operation(string *file, string *filex)
 {
-	string file = "file_old.txt";
-	string filex = "file_new.txt";
-
-	//============Before erased=================
+	//============Function erased=================
 
 	ifstream fin_f;
-	fin_f.open(file);
+	fin_f.open(*file);
 
 	ofstream fout_x;
-	fout_x.open(filex);
+	fout_x.open(*filex);
 
 	if (!fin_f.is_open() || !fout_x.is_open())
 	{
@@ -113,6 +110,50 @@ int main()
 	}
 	fin_f.close();
 	fout_x.close();
+}
+
+void Menu(string *file, string *filex)
+{
+	int size = 0;
+	string* arrw = arrWord(size);
+
+	cout << "\n Operations find & erase unaccaptable words";
+	cout << "\n List of accaptable words:\n";
+	for (int i = 0, n = 1; i < size; i++)
+	{
+		cout << "\t";
+		cout << n << ". " << arrw[i] << " & " << arrw[i++] << "\n";
+		n++;
+	}
+
+	cout << "\n Confirm to modify file: \"" << *file << "\"";
+	cout << "\n\tY -  YES : N - NO";
+	char ch{};
+	cout << "\n\tENTER: ";
+	cin >> ch;
+
+	if (ch == 'Y' || ch == 'y')
+	{
+		Operation(file, filex);
+		cout << "\n\t!CHANGES DONE!";
+		cout << "\n\tCheck file: \"" << *filex << "\"";
+	}
+	else
+	{
+		cout << "\n\t!CHANGES CANCELLED!";
+	}
+}
+
+int main()
+{
+	string f1 = "file_old.txt";
+	string f2 = "file_new.txt";
+
+	string* pf1 = &f1;
+	string* pf2 = &f2;
+
+	Menu(pf1, pf2);
+	cout << endl;
 
 	return 0;
 }
