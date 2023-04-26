@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include<fstream>
+#include<stdio.h>
 
 using namespace std;
 
@@ -8,7 +9,7 @@ using namespace std;
 //A text file is given. Necessary create new file and remove from it all unacceptable words. 
 //The list unacceptable words can be found in another file.
 
-int main()
+string Erase()
 {
 	string sym_str = " ,:;.!?-";
 	char xsym_str{};
@@ -43,7 +44,53 @@ int main()
 			} while (tf);
 		}
 	}
-	cout << str << endl;
+	
+	return str;
+}
+
+string* arrWord(int &i)
+{
+	int count = 0;
+	string fname = "words.txt";
+	string* arrw = nullptr;
+	ifstream fin_w;
+	fin_w.open(fname);
+
+	if (!fin_w.is_open())
+	{
+		cout << "\n\tCannot open the file";
+	}
+	else
+	{
+		while (!fin_w.eof())
+		{
+			string str{};
+			fin_w >> str;
+			count++;
+		}
+		i = count;
+		arrw = new string[count];
+		count--;
+		fin_w.seekg(0, ios::beg);
+
+		while (!fin_w.eof())
+		{
+			string str{};
+			fin_w >> arrw[count];
+			count--;
+		}
+	}
+	fin_w.close();
+
+	return arrw;
+}
+
+int main()
+{
+	int size = 0;
+	string *resFname = arrWord(size);
+	for (int i = 0; i < size; i++)
+		cout << *resFname++ << endl;
 
 	return 0;
 }
