@@ -10,20 +10,41 @@ using namespace std;
 //A text file is given. Necessary create new file and remove from it all unacceptable words. 
 //The list unacceptable words can be found in another file.
 
+bool TryCatch(string file)
+{
+	bool tf = false;
+
+	ifstream fin;
+	fin.exceptions(ifstream::badbit | ifstream::failbit);
+
+	try
+	{
+		fin.open(file);
+		tf = true;
+	}
+	catch (const ifstream::failure& ex)
+	{
+		cout
+			<< endl
+			<< ex.what() << endl
+			<< ex.code() << endl
+			<< "ERROR of the opening file: \"" << file << "\"" << endl;
+	}
+
+	return tf;
+}
+
 string* arrWord(int& i)
 {
 	int count = 0;
 	string fname = "words.txt";
 	string* arrw = nullptr;
-	ifstream fin_w;
-	fin_w.open(fname);
 
-	if (!fin_w.is_open())
+	ifstream fin_w;
+
+	if (TryCatch(fname))
 	{
-		cout << "\n\tCannot open the file";
-	}
-	else
-	{
+		fin_w.open(fname);
 		while (!fin_w.eof())
 		{
 			string str{};
@@ -41,9 +62,8 @@ string* arrWord(int& i)
 			fin_w >> arrw[count];
 			count--;
 		}
+		fin_w.close();
 	}
-	fin_w.close();
-
 	return arrw;
 }
 
@@ -85,38 +105,42 @@ string Erase(string &str)
 	return str;
 }
 
-void Operation(string *file, string *filex)
+bool Operation(string *file, string *filex)
 {
 	//============Function erased=================
-
-	ifstream fin_f;
-	fin_f.open(*file);
-
 	ofstream fout_x;
 	fout_x.open(*filex);
 
-	if (!fin_f.is_open() || !fout_x.is_open())
+	ifstream fin_f;
+
+	if (TryCatch(*file))
 	{
-		cout << "\n\tCannot open the file";
-	}
-	else
-	{
+		fin_f.open(*file);
 		while (!fin_f.eof())
 		{
 			string txt{};
 			getline(fin_f, txt);
 			fout_x << Erase(txt) << "\n";
 		}
+		fin_f.close();
+		fout_x.close();
+
+		return true;
 	}
-	fin_f.close();
-	fout_x.close();
+	else
+	{
+		fout_x.close();
+		return false;
+	}
 }
 
-void Menu(string *file, string *filex)
+int Menu(string *file, string *filex)
 {
 	int size = 0;
 	string* arrw = arrWord(size);
-
+	if (!size)
+		return 0;
+		
 	cout << "\n Operations find & erase unaccaptable words";
 	cout << "\n List of accaptable words:\n";
 	for (int i = 0, n = 1; i < size; i++)
@@ -134,9 +158,13 @@ void Menu(string *file, string *filex)
 
 	if (ch == 'Y' || ch == 'y')
 	{
-		Operation(file, filex);
-		cout << "\n\t!CHANGES DONE!";
-		cout << "\n\tCheck file: \"" << *filex << "\"";
+		if (Operation(file, filex))
+		{
+			cout << "\n\t!CHANGES DONE!";
+			cout << "\n\tCheck file: \"" << *filex << "\"";
+		}
+		else
+			return 0;
 	}
 	else
 	{
