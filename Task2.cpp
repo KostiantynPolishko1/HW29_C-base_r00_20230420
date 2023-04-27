@@ -3,6 +3,7 @@
 #include<fstream>
 #include<stdio.h>
 #include<cstdlib>
+#include<cstdint>
 #include<Windows.h>
 
 using namespace std;
@@ -12,6 +13,77 @@ using namespace std;
 //and vice versa.The data for transliteration is taken from 
 //a file and written to another file. The translation direction 
 //is determined by the user menu.
+
+int checkV()
+{
+	int a;
+	while (true) // the cycle continues until the user enters the correct value
+	{
+		cin >> a;
+		if (cin.fail()) // if the previous extraction was unsuccessful,
+		{
+			cout << "\n\tIncorrect input, no int value: ";
+			cout << "\n\tEnter -> ";
+			cin.clear(); // then return the cin to 'normal' mode of operation
+			cin.ignore(32767, '\n'); // and remove the previous input values from the input buffer
+		}
+		else // if all is well, return a
+		{
+			cin.ignore(32767, '\n'); // and remove the previous input values from the input buffer
+			return abs(a);
+		}
+	}
+
+	return 0;
+}
+
+bool TryCatch(string file)
+{
+	bool tf = false;
+
+	ifstream fin;
+	fin.exceptions(ifstream::badbit | ifstream::failbit);
+
+	try
+	{
+		fin.open(file);
+		tf = true;
+	}
+	catch (const ifstream::failure& ex)
+	{
+		cout
+			<< endl
+			<< "\t" << ex.what() << endl
+			<< "\t" << ex.code() << endl
+			<< "\tERROR of the opening file: \"" << file << "\"" << endl;
+	}
+
+	return tf;
+}
+
+bool confirmAct()
+{
+	cout << "\n Confirm: Y - YES / N - NO";
+restart2:
+	cout << "\n   Press: \"Y\" / \"N\": ";
+
+	char ch{};
+	cin >> ch;
+
+	if (ch == 'Y' || ch == 'y')
+	{
+		return true;
+	}
+
+	if (ch == 'N' || ch == 'n')
+	{
+		cout << "\n !TRANLITERATION CANCELLED!\n";
+		return false;
+	}
+
+	cout << "\n !INCORRECT INPUT!";
+	goto restart2;
+}
 
 string translitRU_EN(string &str_ru)
 {
@@ -67,16 +139,12 @@ string translitRU_EN(string &str_ru)
 		n++;
 		en_txt += s;
 	}
-	
-	//cout << str_ru << endl;
-	//cout << en_txt << endl;
+
 	return en_txt;
 }
 
 string translitEN_RU(string &str_en)
 {
-	//setlocale(LC_ALL, "ru");
-
 	string
 		en = "abcdefghijklmnoprstuvwxyz",
 		en2 = "qQ";
@@ -153,31 +221,37 @@ void Operation(int n)
 		exit (0);
 	}
 
-	fstream fin, fout;
-	fin.open(filein, ios::in);
-
-	if (!fin.is_open())
+	if (TryCatch(filein))
 	{
-		cout << "\n\tCannot open the file\n";
-		exit;
+		fstream fin, fout;
+		fin.open(filein, ios::in);
+		fout.open(fileout, ios::out);
+
+		SetConsoleCP(1251);
+
+		if (confirmAct())
+		{
+			while (!fin.eof())
+			{
+				string str{};
+				getline(fin, str);
+				if (n == 1)
+					fout << translitRU_EN(str) << endl;
+				if (n == 2)
+					fout << translitEN_RU(str) << endl;
+			}
+		}
+		else
+			exit(0);
+
+		SetConsoleCP(1252);
+		fout.close();
+		fin.close();
 	}
 	else
 	{
-		fout.open(fileout, ios::out);
-		SetConsoleCP(1251);
-		while (!fin.eof())
-		{
-			string str{};
-			getline(fin, str);
-			if (n == 1)
-				fout << translitRU_EN(str) << endl;
-			if (n == 2)
-				fout << translitEN_RU(str) << endl;
-		}
-		SetConsoleCP(1252);
-		fout.close();
+		exit(0);
 	}
-	fin.close();
 
 	cout << "\n TRANSLITERATION IS DONE";
 	cout << "\n Check file \"" << fileout << "\"\n";
@@ -191,9 +265,17 @@ int main()
 		<< "\n Menu transliteration"
 		<< "\n\tPress 1: ru -> en"
 		<< "\n\tPress 2: en -> ru"
+		<< "\n\tPress 0: !EXIT!"
 		<< "\n\n\tEnter -> ";
-	cin >> num;
 
+restart1:
+	num = checkV();
+	if (num > 2)
+	{
+		cout << "\n\t!ATTENTION. INCORRECT INPUT!";
+		cout << "\n\tEnter -> ";
+		goto restart1;
+	}
 	Operation(num);
 
 	return 0;
