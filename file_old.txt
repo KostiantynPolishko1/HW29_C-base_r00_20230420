@@ -1,0 +1,9 @@
+A text file is given. Necessary create new file and remove 
+from it all unacceptable words. The list unacceptable words  
+can be found in another file.
+
+String are objects that represent sequences of acters. 
+The string class is an instantiation of the basic_string 
+class template that uses char (i.e., bytes) as its character  
+with its default char_traits and allocator types (see basic_ 
+for more info on the template).

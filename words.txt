@@ -1,0 +1,5 @@
+File file
+Text text
+Char char
+String string
+Type type

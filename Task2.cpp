@@ -2,6 +2,7 @@
 #include <string>
 #include<fstream>
 #include<stdio.h>
+#include<cstdlib>
 #include<Windows.h>
 
 using namespace std;
@@ -12,7 +13,7 @@ using namespace std;
 //a file and written to another file. The translation direction 
 //is determined by the user menu.
 
-void translitRU_EN()
+string translitRU_EN(string &str_ru)
 {
 	setlocale(LC_ALL, "ru");
 
@@ -26,35 +27,31 @@ void translitRU_EN()
 		en3 = "shchShch";
 	string en_txt{};
 
-	const char* str_ru{};
-	str_ru = "Полишко, ваше: имя и e-mail, URL адрес?";
-
-	cout << str_ru << endl;
-
-	while (*str_ru)
+	int n = 0;
+	while (str_ru[n])
 	{
 		int pos = 0;
 		string s = {};
-		if (ru.find(*str_ru) != -1)
+		if (ru.find(str_ru[n]) != -1)
 		{
-			pos = ru.find(*str_ru);
+			pos = ru.find(str_ru[n]);
 			s = en[pos];
 		}
 		else
-			if (ru2.find(*str_ru) != -1)
+			if (ru2.find(str_ru[n]) != -1)
 			{
 				int i = 0;
-				pos = ru2.find(*str_ru);
+				pos = ru2.find(str_ru[n]);
 				i = pos * 2;
 				s += en2[i];
 				i++;
 				s += en2[i];
 			}
 			else
-				if (ru3.find(*str_ru) != -1)
+				if (ru3.find(str_ru[n]) != -1)
 				{
 					int j = 0, count = 0;
-					pos = ru3.find(*str_ru);
+					pos = ru3.find(str_ru[n]);
 					j = pos * 4;
 					while (count < 4)
 					{
@@ -65,18 +62,20 @@ void translitRU_EN()
 				}
 				else
 				{
-					s = *str_ru;
+					s = str_ru[n];
 				}
-		str_ru++;
+		n++;
 		en_txt += s;
 	}
-
-	cout << en_txt << endl;
+	
+	//cout << str_ru << endl;
+	//cout << en_txt << endl;
+	return en_txt;
 }
 
-void translitEN_RU()
+string translitEN_RU(string &str_en)
 {
-	setlocale(LC_ALL, "ru");
+	//setlocale(LC_ALL, "ru");
 
 	string
 		en = "abcdefghijklmnoprstuvwxyz",
@@ -86,7 +85,6 @@ void translitEN_RU()
 		ru = "абцдефгхийклмнопрстуввхыз",
 		ru2 = "кьюКью";
 
-	string str_en = "The quick and Quite tool, translates the letters of the Russian language.";
 	string ru_txt{};
 
 	int i = 0;
@@ -120,14 +118,83 @@ void translitEN_RU()
 		ru_txt += s;
 	}
 
-	cout << str_en << endl;
-	cout << ru_txt << endl;
+	return ru_txt;
+}
+
+void Operation(int n)
+{
+	string fru = "file_ru.txt", fru_en = "file_ru-en.txt";
+	string fen = "file_en.txt", fen_ru = "file_en-ru.txt";
+
+	string filein{}, fileout;
+
+	switch (n)
+	{
+	case 1:
+	{
+		filein = fru;
+		fileout = fru_en;
+
+		cout << "\n TRANSLITERATION RU -> EN";
+		cout << "\n File \"" << filein << "\"\n";
+	}
+		break;
+	case 2:
+	{
+		filein = fen;
+		fileout = fen_ru;
+
+		cout << "\n TRANSLITERATION EN -> RU";
+		cout << "\n File \"" << filein << "\"\n";
+	}
+		break;
+	default:
+		cout << "\n !NO OPERATION SELECTED. THE END!\n";
+		exit (0);
+	}
+
+	fstream fin, fout;
+	fin.open(filein, ios::in);
+
+	if (!fin.is_open())
+	{
+		cout << "\n\tCannot open the file\n";
+		exit;
+	}
+	else
+	{
+		fout.open(fileout, ios::out);
+		SetConsoleCP(1251);
+		while (!fin.eof())
+		{
+			string str{};
+			getline(fin, str);
+			if (n == 1)
+				fout << translitRU_EN(str) << endl;
+			if (n == 2)
+				fout << translitEN_RU(str) << endl;
+		}
+		SetConsoleCP(1252);
+		fout.close();
+	}
+	fin.close();
+
+	cout << "\n TRANSLITERATION IS DONE";
+	cout << "\n Check file \"" << fileout << "\"\n";
 }
 
 int main()
 {
-	translitRU_EN();
-	translitRU_EN();
+	int num = 0;
+
+	cout
+		<< "\n Menu transliteration"
+		<< "\n\tPress 1: ru -> en"
+		<< "\n\tPress 2: en -> ru"
+		<< "\n\n\tEnter -> ";
+	cin >> num;
+
+	Operation(num);
 
 	return 0;
 }
