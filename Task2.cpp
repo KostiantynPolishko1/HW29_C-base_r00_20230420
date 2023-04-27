@@ -74,8 +74,59 @@ void translitRU_EN()
 	cout << en_txt << endl;
 }
 
+void translitEN_RU()
+{
+	setlocale(LC_ALL, "ru");
+
+	string
+		en = "abcdefghijklmnoprstuvwxyz",
+		en2 = "qQ";
+
+	string
+		ru = "àáöäåôãõèéêëìíîïðñòóââõûç",
+		ru2 = "êüþÊüþ";
+
+	string str_en = "The quick and Quite tool, translates the letters of the Russian language.";
+	string ru_txt{};
+
+	int i = 0;
+	while (str_en[i])
+	{
+		int pos = 0;
+		string s = {};
+		if (en.find(str_en[i]) != -1)
+		{
+			pos = en.find(str_en[i]);
+			s = ru[pos];
+		}
+		else
+			if (en2.find(str_en[i]) != -1)
+			{
+				int j = 0, count = 0;
+				pos = en2.find(str_en[i]);
+				j = pos * 3;
+				while (count < 3)
+				{
+					s += ru2[j];
+					j++;
+					count++;
+				}
+			}
+			else
+			{
+				s = str_en[i];
+			}
+		i++;
+		ru_txt += s;
+	}
+
+	cout << str_en << endl;
+	cout << ru_txt << endl;
+}
+
 int main()
 {
+	translitRU_EN();
 	translitRU_EN();
 
 	return 0;
