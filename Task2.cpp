@@ -146,11 +146,11 @@ string translitRU_EN(string &str_ru)
 string translitEN_RU(string &str_en)
 {
 	string
-		en = "abcdefghijklmnoprstuvwxyz",
+		en = "abcdefghijklmnoprstuvwxyzABCDEFGHIJKLMNOPRSTUVWXYZ",
 		en2 = "qQ";
 
 	string
-		ru = "абцдефгхийклмнопрстуввхыз",
+		ru = "абцдефгхийклмнопрстуввхызАБЦДЕФГХИЙКЛМНОПРСТУВВХЫЗ",
 		ru2 = "кьюКью";
 
 	string ru_txt{};
@@ -226,7 +226,7 @@ void Operation(int n)
 		fstream fin, fout;
 		fin.open(filein, ios::in);
 		fout.open(fileout, ios::out);
-
+		
 		SetConsoleCP(1251);
 
 		if (confirmAct())
